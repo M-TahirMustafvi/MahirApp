@@ -3,7 +3,6 @@ package com.example.myapplication
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,6 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 data class Option(val icon: Int, val title: String)
@@ -33,7 +34,8 @@ class ProfileActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ProfilePage()
+                    // Pass the NavController to the ProfilePage
+                    ProfilePage(rememberNavController())
                 }
             }
         }
@@ -41,7 +43,7 @@ class ProfileActivity : ComponentActivity() {
 }
 
 @Composable
-fun ProfilePage() {
+fun ProfilePage(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -49,7 +51,7 @@ fun ProfilePage() {
     ) {
         ProfileHeader()
         Spacer(modifier = Modifier.height(26.dp))
-        OptionsList()
+        OptionsList(navController) // Pass navController here
     }
 }
 
@@ -86,7 +88,7 @@ fun ProfileHeader() {
 }
 
 @Composable
-fun OptionsList() {
+fun OptionsList(navController: NavHostController) {
     val optionsTop = listOf(
         Option(R.drawable.user, "Account"),
         Option(R.drawable.share, "Invite Friends / Get CashBack"),
@@ -110,24 +112,23 @@ fun OptionsList() {
             .shadow(4.dp, shape = RoundedCornerShape(16.dp))
     ) {
         optionsTop.forEach { option ->
-            OptionItem(icon = option.icon, title = option.title)
+            OptionItem(icon = option.icon, title = option.title, navController) // Pass navController
             Divider()
         }
     }
-        Spacer(modifier = Modifier.height(36.dp))
+    Spacer(modifier = Modifier.height(36.dp))
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .shadow(4.dp, shape = RoundedCornerShape(16.dp))
-        ) {
-            optionsBottom.forEach { option ->
-                OptionItem(icon = option.icon, title = option.title)
-                Divider()
-            }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .shadow(4.dp, shape = RoundedCornerShape(16.dp))
+    ) {
+        optionsBottom.forEach { option ->
+            OptionItem(icon = option.icon, title = option.title, navController) // Pass navController
+            Divider()
         }
-
+    }
 }
 
 @Composable
@@ -140,11 +141,24 @@ fun Divider() {
 }
 
 @Composable
-fun OptionItem(icon: Int, title: String) {
+fun OptionItem(icon: Int, title: String, navController: NavHostController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /* Handle click */ }
+            .clickable {
+                when (title) {
+                    "Account" -> navController.navigate("account")
+                    "Invite Friends / Get CashBack" -> navController.navigate("referral")
+//                    "Orders" -> navController.navigate("orders")
+//                    "Address" -> navController.navigate("address")
+//                    "Rewards" -> navController.navigate("rewards")
+//                    "Wallet" -> navController.navigate("wallet")
+//                    "About Us" -> navController.navigate("about")
+//                    "Terms and Conditions" -> navController.navigate("terms")
+//                    "Privacy Policy" -> navController.navigate("privacy")
+//                    "Log Out" -> navController.navigate("logout")
+                }
+            }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -162,6 +176,6 @@ fun OptionItem(icon: Int, title: String) {
 @Composable
 fun ProfilePagePreview() {
     MyApplicationTheme {
-        ProfilePage()
+        ProfilePage(rememberNavController()) // For preview, you can pass a dummy NavController
     }
 }

@@ -13,16 +13,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 class HomeServicesActivity : ComponentActivity() {
@@ -34,7 +36,7 @@ class HomeServicesActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeServicesPage()
+                    HomeServicesPage(rememberNavController())
                 }
             }
         }
@@ -43,11 +45,12 @@ class HomeServicesActivity : ComponentActivity() {
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeServicesPage() {
+fun HomeServicesPage(navController: NavHostController) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current // Correct usage of context in Compose
 
     Scaffold(
-        bottomBar = { BottomNavBar() } // Integrating Bottom Navigation Bar
+        bottomBar = { BottomNavBar(context, navController) } // Passing the correct context to BottomNavBar
     ) {
         Column(
             modifier = Modifier
@@ -72,42 +75,6 @@ fun HomeServicesPage() {
 }
 
 @Composable
-fun BottomNavBar() {
-    NavigationBar(
-        //colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-        contentColor = Color.Black
-    ) {
-        NavigationBarItem(
-            icon = {
-                Icon(painter = painterResource(id = R.drawable.back), contentDescription = "Home", Modifier.size(30.dp))
-            },
-            label = { Text(text = "Home") },
-            selected = true,
-            onClick = { /* Handle home click */ }
-        )
-
-        NavigationBarItem(
-            icon = {
-                Icon(painter = painterResource(id = R.drawable.shopping), contentDescription = "Orders", Modifier.size(30.dp))
-            },
-            label = { Text(text = "Orders") },
-            selected = false,
-            onClick = { /* Handle orders click */ }
-        )
-
-        NavigationBarItem(
-            icon = {
-                Icon(painter = painterResource(id = R.drawable.user), contentDescription = "Profile", Modifier.size(30.dp))
-            },
-            label = { Text(text = "Profile") },
-            selected = false,
-            onClick = { /* Handle profile click */ }
-        )
-    }
-}
-
-
-@Composable
 fun HomeServicesHeader() {
     Row(
         modifier = Modifier
@@ -118,7 +85,7 @@ fun HomeServicesHeader() {
     ) {
         Icon(painter = painterResource(id = R.drawable.back), contentDescription = "Back", Modifier.size(30.dp))
         Text(text = "Home Services", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-        Icon(painter = painterResource(id = R.drawable.phone), contentDescription = "Call",  Modifier.size(30.dp))
+        Icon(painter = painterResource(id = R.drawable.phone), contentDescription = "Call", Modifier.size(30.dp))
     }
 }
 
@@ -264,6 +231,6 @@ fun ExploreCleaningServices() {
 @Composable
 fun HomeServicesPagePreview() {
     MyApplicationTheme {
-        HomeServicesPage()
+        HomeServicesPage(rememberNavController())
     }
 }

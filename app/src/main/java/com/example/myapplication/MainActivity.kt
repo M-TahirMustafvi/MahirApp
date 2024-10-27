@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +19,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,13 +30,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    //MahirHomePage()
-                    //ProfilePage()
-                    HomeServicesPage()
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "home") {
+                    composable("home") { MahirHomePage(navController) }
+                    composable("profile") { ProfilePage(navController) }
+                    composable("homeServices") { HomeServicesPage(navController) }
+                    composable("salonServices") {  }
+                    composable("cleaningServices") { CleaningServicesPage(navController) }
+                    composable("mahirMaintained") { SubscriptionScreen() }
+                    composable("account") { AccountPage() }
+                    composable("referral") { ReferralScreen() }
+
                 }
             }
         }
@@ -41,24 +48,17 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MahirHomePage() {
+fun MahirHomePage(navController: NavHostController) {
     Column(modifier = Modifier.fillMaxSize()) {
-        // Top Bar Section
-        TopBar()
-
-        // Welcome Section
+        TopBar(onMenuClick = { navController.navigate("profile") })
         WelcomeSection()
-
-        // Coins and Wallet Row
         CoinsAndWalletRow()
-
-        // Services Grid Section
-        ServiceGrid()
+        ServiceGrid(navController) // Pass navController here
     }
 }
 
 @Composable
-fun TopBar() {
+fun TopBar(onMenuClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -69,7 +69,9 @@ fun TopBar() {
         Icon(
             painter = painterResource(id = R.drawable.icons8_menu_50),
             contentDescription = "Menu",
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier
+                .size(24.dp)
+                .clickable { onMenuClick() } // Navigate to Account on menu click
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -151,46 +153,54 @@ fun CoinWalletButton(label: String, icon: Int) {
 }
 
 @Composable
-fun ServiceGrid() {
+fun ServiceGrid(navController: NavHostController) {
     Column(modifier = Modifier.padding(16.dp)) {
-        // First row - Home and Salon services side by side
         ServiceRow(
             leftService = Service("Home Services", R.drawable.handyman1, "Residential", "Commercial"),
-            rightService = Service("Salon Services", R.drawable.beautician1, "Females Only")
+            rightService = Service("Salon Services", R.drawable.beautician1, "Females Only"),
+            navController = navController // Pass navController here
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Second row - Cleaning services taking full row
         FullWidthServiceCard(
-            service = Service("Cleaning Services", R.drawable.cleaning1, "Residential", "Commercial")
+            service = Service("Cleaning Services", R.drawable.cleaning1, "Residential", "Commercial"),
+            navController = navController // Pass navController here
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Third row - Maintained by Mahir taking full row
         FullWidthServiceCard(
-            service = Service("Maintained by Mahir", R.drawable.cleaning1, "Residential", "Commercial")
+            service = Service("Maintained by Mahir", R.drawable.cleaning1, "Residential", "Commercial"),
+            navController = navController // Pass navController here
         )
     }
 }
 
 @Composable
-fun ServiceRow(leftService: Service, rightService: Service) {
+fun ServiceRow(leftService: Service, rightService: Service, navController: NavHostController) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-        ServiceCard(service = leftService)
+        ServiceCard(service = leftService, navController = navController)
         Spacer(modifier = Modifier.width(16.dp))
-        ServiceCard(service = rightService)
+        ServiceCard(service = rightService, navController = navController)
     }
 }
 
 @Composable
-fun ServiceCard(service: Service, modifier: Modifier = Modifier) {
+fun ServiceCard(service: Service, navController: NavHostController, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
-            .clickable { /* Handle click */ }
-            .width(160.dp) // Width for the service card
-            .height(170.dp), // Height for the service card
+            .clickable {
+                // Navigate based on the service name
+                when (service.name) {
+                    "Home Services" -> navController.navigate("homeServices")
+                    "Salon Services" -> navController.navigate("salonServices")
+                    "Cleaning Services" -> navController.navigate("cleaningServices")
+                    "Maintained by Mahir" -> navController.navigate("mahirMaintained")
+                }
+            }
+            .width(160.dp)
+            .height(170.dp),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -212,19 +222,25 @@ fun ServiceCard(service: Service, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun FullWidthServiceCard(service: Service) {
+fun FullWidthServiceCard(service: Service, navController: NavHostController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
-            .clickable { /* Handle click */ },
+            .clickable {
+                // Navigate based on the service name
+                when (service.name) {
+                    "Cleaning Services" -> navController.navigate("cleaningServices")
+                    "Maintained by Mahir" -> navController.navigate("mahirMaintained")
+                }
+            },
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(
-                modifier = Modifier.weight(1f), // Use weight to fill available space
-                verticalArrangement = Arrangement.Center // Center vertically within the column
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = service.name,
@@ -232,7 +248,7 @@ fun FullWidthServiceCard(service: Service) {
                     fontSize = 16.sp
                 )
                 if (service.tagline.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(4.dp)) // Spacer for spacing
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = service.tagline,
                         fontSize = 12.sp,
@@ -240,7 +256,7 @@ fun FullWidthServiceCard(service: Service) {
                     )
                 }
             }
-            Spacer(modifier = Modifier.width(16.dp)) // Space between text and image
+            Spacer(modifier = Modifier.width(16.dp))
             Image(
                 painter = painterResource(id = service.imageRes),
                 contentDescription = service.name,
@@ -251,7 +267,6 @@ fun FullWidthServiceCard(service: Service) {
     }
 }
 
-
 // Sample Data
 data class Service(val name: String, val imageRes: Int, val tagline: String = "", val secondTag: String = "")
 
@@ -259,6 +274,6 @@ data class Service(val name: String, val imageRes: Int, val tagline: String = ""
 @Composable
 fun MahirHomePagePreview() {
     MyApplicationTheme {
-        MahirHomePage()
+        MahirHomePage(rememberNavController()) // For preview, you can pass a dummy NavController
     }
 }
