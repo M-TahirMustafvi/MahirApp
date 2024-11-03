@@ -65,9 +65,9 @@ fun HomeServicesPage(navController: NavHostController) {
             Spacer(modifier = Modifier.height(16.dp))
             HomeServicesBanner()
             Spacer(modifier = Modifier.height(16.dp))
-            TrendingServices()
+            TrendingServices(navController) // Pass navController here
             Spacer(modifier = Modifier.height(16.dp))
-            AllServicesGrid()
+            AllServicesGrid(navController) // Pass navController here
             Spacer(modifier = Modifier.height(24.dp))
             ExploreCleaningServices()
         }
@@ -90,21 +90,6 @@ fun HomeServicesHeader() {
 }
 
 @Composable
-fun SearchBar() {
-    TextField(
-        value = "",
-        onValueChange = {},
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        placeholder = {
-            Text(text = "Search", color = Color.Gray)
-        },
-        shape = RoundedCornerShape(8.dp)
-    )
-}
-
-@Composable
 fun HomeServicesBanner() {
     Image(
         painter = painterResource(id = R.drawable.bg_compose_background),
@@ -119,7 +104,7 @@ fun HomeServicesBanner() {
 }
 
 @Composable
-fun TrendingServices() {
+fun TrendingServices(navController: NavHostController) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -135,19 +120,20 @@ fun TrendingServices() {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            TrendingServiceCard("AC Installation", R.drawable.ac, "Rs. 2800")
-            TrendingServiceCard("Furniture Polish", R.drawable.handyman, "Rs. 1500")
+            TrendingServiceCard("AC Installation", R.drawable.ac, "Rs. 2800", navController)
+            TrendingServiceCard("Furniture Polish", R.drawable.handyman, "Rs. 1500", navController)
         }
     }
 }
 
 @Composable
-fun TrendingServiceCard(serviceName: String, iconRes: Int, price: String) {
+fun TrendingServiceCard(serviceName: String, iconRes: Int, price: String, navController: NavHostController) {
     Column(
         modifier = Modifier
             .size(150.dp)
             .background(Color.White, RoundedCornerShape(8.dp))
             .padding(8.dp)
+            .clickable { navController.navigate("serviceName") } // Add navigation here
     ) {
         Image(
             painter = painterResource(id = iconRes),
@@ -161,7 +147,7 @@ fun TrendingServiceCard(serviceName: String, iconRes: Int, price: String) {
 }
 
 @Composable
-fun AllServicesGrid() {
+fun AllServicesGrid(navController: NavHostController) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Text(text = "All Services", fontWeight = FontWeight.Bold, fontSize = 18.sp)
         Spacer(modifier = Modifier.height(8.dp))
@@ -185,7 +171,7 @@ fun AllServicesGrid() {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     rowServices.forEach { (name, icon) ->
-                        ServiceItem(name = name, icon = icon)
+                        ServiceItem(name = name, icon = icon, navController = navController) // Pass navController here
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -195,11 +181,11 @@ fun AllServicesGrid() {
 }
 
 @Composable
-fun ServiceItem(name: String, icon: Int) {
+fun ServiceItem(name: String, icon: Int, navController: NavHostController) {
     Column(
         modifier = Modifier
             .width(100.dp)
-            .clickable { /* Handle click */ }
+            .clickable { navController.navigate(name) }
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

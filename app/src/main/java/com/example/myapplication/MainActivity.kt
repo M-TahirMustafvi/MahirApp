@@ -31,7 +31,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "home") {
+                NavHost(navController = navController, startDestination = "login") {
+                    composable("login") { LoginScreen(navController) }
                     composable("home") { MahirHomePage(navController) }
                     composable("profile") { ProfilePage(navController) }
                     composable("homeServices") { HomeServicesPage(navController) }
@@ -40,6 +41,9 @@ class MainActivity : ComponentActivity() {
                     composable("mahirMaintained") { SubscriptionScreen() }
                     composable("account") { AccountPage() }
                     composable("referral") { ReferralScreen() }
+                    composable("Electrician") { ElectricianServiceScreen(navController) }
+                    composable("Carpenter") { CarpenterServiceScreen(navController) }
+                    composable("AC Services") { ACServiceScreen(navController) }
 
                 }
             }

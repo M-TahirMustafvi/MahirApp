@@ -43,7 +43,7 @@ fun SubscriptionScreen() {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        TopBar()
+        TopBar("Maintained By Mahir")
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -63,23 +63,6 @@ fun SubscriptionScreen() {
         Spacer(modifier = Modifier.weight(1f))
 
         BottomNavigationBar()
-    }
-}
-
-@Composable
-fun TopBar() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center // Centering the title horizontally
-    ) {
-        Text(
-            text = "Maintained by Mahir",
-            fontSize = 18.sp, // Slightly increased font size for balance
-            fontWeight = FontWeight.Bold,
-        )
     }
 }
 

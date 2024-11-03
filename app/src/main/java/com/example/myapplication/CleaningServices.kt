@@ -127,7 +127,7 @@ fun AllCleaningServicesGrid() {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     rowServices.forEach { (name, icon) ->
-                        ServiceItem(name = name, icon = icon)
+                        ServiceItem(name = name, icon = icon, rememberNavController())
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -153,8 +153,8 @@ fun TrendingCleaningServices() {
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
         ) {
-            TrendingServiceCard("Sofa Cleaning", R.drawable.sofa, "Rs. 1750")
-            TrendingServiceCard("Car Detailing", R.drawable.detailing, "Rs. 4250")
+            TrendingServiceCard("Sofa Cleaning", R.drawable.sofa, "Rs. 1750", rememberNavController())
+            TrendingServiceCard("Car Detailing", R.drawable.detailing, "Rs. 4250", rememberNavController())
         }
     }
 }
